@@ -1,0 +1,53 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"vcs": {
+		"enabled": false,
+		"clientKind": "git",
+		"useIgnoreFile": false
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"ignore": [
+			".next",
+			".turbo",
+			"node_modules",
+			"public",
+			"out",
+			"build",
+			"dist",
+			"coverage",
+			"*.log",
+			".git",
+			".github",
+			".vscode",
+			".env",
+			"env.d.ts",
+			"next-env.d.ts",
+			"package-lock.json",
+			"yarn.lock",
+			"prisma",
+			"turbo.json",
+			"tsconfig.json",
+			"jsconfig.json",
+			"src/shared/ui/**"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	}
+}
