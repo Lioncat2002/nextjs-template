@@ -1,5 +1,5 @@
-import type { Options } from "ky";
 import { env } from "@/src/config";
+import type { Options } from "ky";
 import ky from "ky";
 
 type RequestOptions = Options;
@@ -18,7 +18,7 @@ const apiClient = ky.create({
 				}
 
 				if (typeof window !== "undefined") {
-					// Client-side requests	
+					// Client-side requests
 				}
 			},
 		],
@@ -28,9 +28,9 @@ const apiClient = ky.create({
 					// Server-side requests
 				}
 
-                if(typeof window !== "undefined") {
-                    // Client-side requests
-                }
+				if (typeof window !== "undefined") {
+					// Client-side requests
+				}
 			},
 		],
 	},
