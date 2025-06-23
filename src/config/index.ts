@@ -9,6 +9,8 @@ export const env = createEnv({
 	server: {
 		/* SERVER SIDE ENVIRONMENT VARIABLES */
 		DATABASE_URL: z.string().url(),
+		NODE_ENV: z.enum(["development", "production", "test"]),
+		SECRET_COOKIE_PASSWORD: z.string(),
 	},
 	/*
 	 * Environment variables available on the client (and server).
@@ -29,6 +31,8 @@ export const env = createEnv({
 	runtimeEnv: {
 		DATABASE_URL: process.env.DATABASE_URL,
 		NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+		NODE_ENV: process.env.NODE_ENV,
+		SECRET_COOKIE_PASSWORD: process.env.SECRET_COOKIE_PASSWORD,
 	},
 	// experimental__runtimeEnv: {
 	//   NEXT_PUBLIC_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_PUBLISHABLE_KEY,
