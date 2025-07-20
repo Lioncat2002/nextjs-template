@@ -1,5 +1,4 @@
-"use client";
-
+import { LoginForm } from "@/src/features/auth/login-form";
 import {
 	Card,
 	CardContent,
@@ -11,18 +10,14 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
-export const Login = () => {
-	const handleLogin = (data: { email: string; password: string }) => {};
-
-	const handleProviderLogin = () => {};
-
+export const LoginCard = () => {
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-clay-bg p-4">
 			<div className="w-full max-w-md">
 				<div className="text-center mb-8">
 					<div className="inline-flex items-center space-x-2 mb-4">
 						<Image
-							src="/logo.png"
+							src="/logo.svg"
 							alt="Company Logo"
 							width={40}
 							height={40}
@@ -41,11 +36,7 @@ export const Login = () => {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						{/* <LoginForm
-							onSubmit={handleLogin}
-							handleGoogleProvider={handleProviderLogin}
-							isLoading={isPending}
-						/> */}
+						<LoginForm />
 					</CardContent>
 					<CardFooter className="flex justify-center">
 						<p className="text-sm text-clay-muted">

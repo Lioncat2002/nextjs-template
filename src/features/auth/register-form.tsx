@@ -10,20 +10,23 @@ import {
 	FormMessage,
 } from "@/src/shared/ui/form";
 import { Input } from "@/src/shared/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { FaGoogle } from "react-icons/fa";
+import { type RegisterFormValues, RegisterSchema } from "./schema";
 
 interface RegisterFormProps
 	extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit"> {}
 
 export const RegisterForm = ({ className }: RegisterFormProps) => {
-	const form = useForm({
+	const form = useForm<RegisterFormValues>({
 		defaultValues: {
 			displayName: "",
 			email: "",
 			password: "",
 			confirmPassword: "",
 		},
+		resolver: zodResolver(RegisterSchema),
 	});
 
 	const handleSubmit = form.handleSubmit((data) => {});

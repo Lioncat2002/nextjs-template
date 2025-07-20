@@ -1,5 +1,4 @@
-"use client";
-
+import { RegisterForm } from "@/src/features/auth/register-form";
 import {
 	Card,
 	CardContent,
@@ -11,23 +10,14 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
-export const Register = () => {
-	const handleRegister = (data: {
-		displayName: string;
-		email: string;
-		password: string;
-		confirmPassword: string;
-	}) => {};
-
-	const handleProviderLogin = () => {};
-
+export const RegisterCard = () => {
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-clay-bg p-4">
 			<div className="w-full max-w-md">
 				<div className="text-center mb-8">
 					<div className="inline-flex items-center space-x-2 mb-4">
 						<Image
-							src="/logo.png"
+							src="/logo.svg"
 							alt="Company Logo"
 							width={40}
 							height={40}
@@ -46,11 +36,7 @@ export const Register = () => {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						{/* <RegisterForm
-							onSubmit={handleRegister}
-							handleProviderLogin={handleProviderLogin}
-							isLoading={isPending}
-						/> */}
+						<RegisterForm />
 					</CardContent>
 					<CardFooter className="flex justify-center">
 						<p className="text-sm text-clay-muted">

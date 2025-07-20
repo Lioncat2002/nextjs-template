@@ -10,19 +10,22 @@ import {
 	FormMessage,
 } from "@/src/shared/ui/form";
 import { Input } from "@/src/shared/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { FaGoogle } from "react-icons/fa";
+import { type LoginFormValues, LoginSchema } from "./schema";
 
 interface LoginFormProps
 	extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit"> {}
 
 export const LoginForm = ({ className }: LoginFormProps) => {
-	const form = useForm({
+	const form = useForm<LoginFormValues>({
 		defaultValues: {
 			email: "",
 			password: "",
 		},
+		resolver: zodResolver(LoginSchema),
 	});
 
 	return (
