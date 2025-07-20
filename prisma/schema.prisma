@@ -13,3 +13,66 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id            String  @id @default(cuid())
+  firebaseUID   String  @unique
+  email         String  @unique
+  emailVerified Boolean
+  displayName   String?
+  phoneNumber   String?
+  photoURL      String?
+
+  createdAt     Int
+  updatedAt     Int
+
+  /* RELATIONSHIPS */
+  companies     CompanyMembership[]
+
+  @@map("users") 
+}
+
+
+model Company {
+  id            String  @id @default(cuid())
+  name          String
+  logo          String?
+  description   String?
+  website       String?
+  location      String?
+  email         String?
+  phoneNumber   String?
+  photoURL      String?
+
+  createdAt     Int
+  updatedAt     Int
+
+  /* RELATIONSHIPS */
+  users         CompanyMembership[]
+
+  @@map("companies")
+}
+
+
+enum Role {
+    ADMIN
+    MANAGER
+    EMPLOYEE
+}
+
+
+model CompanyMembership {
+  /* RELATIONSHIPS */
+  user          User    @relation(fields: [userId], references: [id])
+  company       Company @relation(fields: [companyId], references: [id])
+
+  userId        String
+  companyId     String
+  role          Role    @default(EMPLOYEE)
+
+
+  @@id([userId, companyId])
+  @@map("company_memberships")
+}
+
+
