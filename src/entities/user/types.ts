@@ -7,9 +7,9 @@ type User = {
 	avatarUrl: string | null;
 	isEmailVerified: boolean;
 	passwordHash: string;
-	lastLoginAt?: Date;
+	lastLoginAt: number | null;
 
-	organizations: OrgMembership[];
-	createdAt: Date;
-	updatedAt: Date;
+	organizations: UserMembership[];
+	createdAt: number | null;
+	updatedAt: number | null;
 };

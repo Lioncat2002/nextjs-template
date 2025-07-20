@@ -1,4 +1,4 @@
-type RoleName = "admin" | "manager" | "employee";
+type RoleName = "ADMIN" | "MANAGER" | "EMPLOYEE";
 
 type Permission =
 	| "user:read"
@@ -9,11 +9,5 @@ type Permission =
 	| "org:write"
 	| "org:delete"
 	| "billing:read"
-	| "billing:edit";
-
-type Role = {
-	id: string;
-	name: RoleName;
-	description?: string;
-	permissions: Permission[];
-};
+	| "billing:write"
+	| (string & {});

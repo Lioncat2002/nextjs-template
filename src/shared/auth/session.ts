@@ -4,7 +4,7 @@ import { sealData, unsealData } from "iron-session";
 import { z } from "zod";
 
 export const SessionSchema = z.object({
-	accessToken: z.string().nullable(),
+	accessToken: z.string(),
 	refreshToken: z.string().nullable(),
 });
 
