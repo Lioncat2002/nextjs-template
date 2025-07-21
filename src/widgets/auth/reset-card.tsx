@@ -1,3 +1,4 @@
+import { ResetForm } from "@/src/features/auth/reset-form";
 import {
 	Card,
 	CardContent,
@@ -24,19 +25,19 @@ export const ResetPasswordCard = () => {
 						/>{" "}
 					</div>
 					<h1 className="text-2xl font-bold">Forgot your password?</h1>
-					<p className="mt-1">No worries, we'll help you reset it</p>
+					<p className="mt-1">No worries, we&apos;ll help you reset it</p>
 				</div>
 
 				<Card>
 					<CardHeader>
 						<CardTitle>Reset Password</CardTitle>
 						<CardDescription>
-							Enter your email address and we'll send you a link to reset your
+							Enter your email address and we&apos;ll send you a link to reset your
 							password
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<ResetPasswordCard />
+						<ResetForm/>
 					</CardContent>
 					<CardFooter className="flex justify-center">
 						<p className="text-sm">
