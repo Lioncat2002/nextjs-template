@@ -45,10 +45,68 @@
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
 		"eslint": "^9.29.0",
+		"eslint-config-next": "^15.4.2",
 		"eslint-plugin-boundaries": "^5.0.1",
 		"prisma": "^6.12.0",
 		"tailwindcss": "^4",
 		"tw-animate-css": "^1.3.4",
 		"typescript": "^5"
+	},
+	"eslintConfig": {
+		"extends": "next/core-web-vitals",
+		"plugins": [
+			"boundaries"
+		],
+		"rules": {
+			"boundaries/element-types": [
+				2,
+				{
+					"default": "disallow",
+					"rules": [
+						{
+							"from": "entities",
+							"allow": [
+								"shared"
+							]
+						},
+						{
+							"from": "widgets",
+							"allow": [
+								"shared",
+								"entities"
+							]
+						},
+						{
+							"from": "views",
+							"allow": [
+								"shared",
+								"entities",
+								"widgets"
+							]
+						}
+					]
+				}
+			]
+		},
+		"settings": {
+			"boundaries/elements": [
+				{
+					"type": "shared",
+					"pattern": "src/shared"
+				},
+				{
+					"type": "entities",
+					"pattern": "src/entities"
+				},
+				{
+					"type": "widgets",
+					"pattern": "src/widgets"
+				},
+				{
+					"type": "views",
+					"pattern": "src/views"
+				}
+			]
+		}
 	}
 }

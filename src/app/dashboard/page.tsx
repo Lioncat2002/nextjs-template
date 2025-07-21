@@ -6,7 +6,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/src/shared/ui/breadcrumb";
-import { AppSidebar } from "@/src/shared/ui/components/app-sidebar";
+import { AppSidebar } from "@/src/widgets/nav/dashboard/app-sidebar";
 import { Separator } from "@/src/shared/ui/separator";
 import {
 	SidebarInset,

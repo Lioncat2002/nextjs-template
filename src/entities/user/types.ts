@@ -1,15 +1,3 @@
-type User = {
-	id: string;
-	firstName: string;
-	lastName: string;
-	email: string;
-	phone: string | null;
-	avatarUrl: string | null;
-	isEmailVerified: boolean;
-	passwordHash: string;
-	lastLoginAt: number | null;
+import type { User as PrismaUser } from "@/generated/prisma";
 
-	organizations: UserMembership[];
-	createdAt: number | null;
-	updatedAt: number | null;
-};
+export type User = PrismaUser;
