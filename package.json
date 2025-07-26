@@ -54,9 +54,7 @@
 	},
 	"eslintConfig": {
 		"extends": "next/core-web-vitals",
-		"plugins": [
-			"boundaries"
-		],
+		"plugins": ["boundaries"],
 		"rules": {
 			"boundaries/element-types": [
 				2,
@@ -65,24 +63,15 @@
 					"rules": [
 						{
 							"from": "entities",
-							"allow": [
-								"shared"
-							]
+							"allow": ["shared"]
 						},
 						{
 							"from": "widgets",
-							"allow": [
-								"shared",
-								"entities"
-							]
+							"allow": ["shared", "entities"]
 						},
 						{
 							"from": "views",
-							"allow": [
-								"shared",
-								"entities",
-								"widgets"
-							]
+							"allow": ["shared", "entities", "widgets"]
 						}
 					]
 				}

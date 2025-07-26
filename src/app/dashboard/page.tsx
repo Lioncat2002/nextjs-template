@@ -6,13 +6,13 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/src/shared/ui/breadcrumb";
-import { AppSidebar } from "@/src/widgets/nav/dashboard/app-sidebar";
 import { Separator } from "@/src/shared/ui/separator";
 import {
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/src/shared/ui/sidebar";
+import { AppSidebar } from "@/src/widgets/nav/dashboard/app-sidebar";
 
 export default function Page() {
 	return (
