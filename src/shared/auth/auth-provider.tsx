@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { SessionModel } from "./session";
+import type { SessionModel } from "./session-option";
 
 type AuthContextType = {
 	session: SessionModel | null;

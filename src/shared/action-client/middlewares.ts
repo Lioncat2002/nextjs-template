@@ -1,8 +1,7 @@
 import { createMiddleware } from "next-safe-action";
-import { createSessionManager } from "../auth/session";
+import { getSession } from "../auth/session";
 
 export const authMiddleware = createMiddleware().define(async ({ next }) => {
-	const { getSession } = createSessionManager();
 	const session = await getSession();
 
 	if (!session) throw new Error("Unauthorized");

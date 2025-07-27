@@ -1,41 +1,15 @@
+"use server";
+
 import { env } from "@/src/config";
 import type { SessionOptions } from "iron-session";
 import { sealData, unsealData } from "iron-session";
-import { z } from "zod";
+import {
+	type SessionModel,
+	SessionSchema,
+	getSessionOptions,
+} from "./session-option";
 
-export const SessionSchema = z.object({
-	accessToken: z.string(),
-	refreshToken: z.string().nullable(),
-});
-
-export type SessionModel = z.infer<typeof SessionSchema>;
-
-// Default session configuration
-export const defaultSessionOptions: SessionOptions = {
-	cookieName: "app-session",
-	password: env.SECRET_COOKIE_PASSWORD,
-	cookieOptions: {
-		secure: env.NODE_ENV === "production",
-		httpOnly: true,
-		sameSite: "strict",
-		maxAge: 60 * 60 * 24,
-		path: "/",
-	},
-	ttl: 0,
-};
-
-const getSessionOptions = (
-	customOptions?: Partial<SessionOptions>,
-): SessionOptions => ({
-	...defaultSessionOptions,
-	...customOptions,
-	cookieOptions: {
-		...defaultSessionOptions.cookieOptions,
-		...customOptions?.cookieOptions,
-	},
-});
-
-const getSession = async (
+export const getSession = async (
 	options?: Partial<SessionOptions>,
 ): Promise<SessionModel | null> => {
 	try {
@@ -64,7 +38,7 @@ const getSession = async (
 	}
 };
 
-const setSession = async (
+export const setSession = async (
 	value: SessionModel,
 	options?: Partial<SessionOptions>,
 ): Promise<void> => {
@@ -96,22 +70,11 @@ const setSession = async (
 	}
 };
 
-const destroySession = async (
+export const destroySession = async (
 	options?: Partial<SessionOptions>,
 ): Promise<void> => {
 	const sessionOptions = getSessionOptions(options);
 	const { cookies } = await import("next/headers");
 	const cookieStore = await cookies();
 	cookieStore.delete(sessionOptions.cookieName);
-};
-
-export const createSessionManager = (
-	customOptions?: Partial<SessionOptions>,
-) => {
-	const sessionOptions = getSessionOptions(customOptions);
-	return {
-		getSession: () => getSession(sessionOptions),
-		setSession: (value: SessionModel) => setSession(value, sessionOptions),
-		destroySession: () => destroySession(sessionOptions),
-	};
 };

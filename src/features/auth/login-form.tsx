@@ -11,15 +11,18 @@ import {
 } from "@/src/shared/ui/form";
 import { Input } from "@/src/shared/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { FaGoogle } from "react-icons/fa";
 import { type LoginFormValues, LoginSchema } from "./schema";
+import { useLogin } from "./use-login";
 
 interface LoginFormProps
 	extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit"> {}
 
 export const LoginForm = ({ className }: LoginFormProps) => {
+	const { handleCredentialLogin, handleGoogleLogin, isSubmitting } = useLogin();
 	const form = useForm<LoginFormValues>({
 		defaultValues: {
 			email: "",
@@ -30,7 +33,10 @@ export const LoginForm = ({ className }: LoginFormProps) => {
 
 	return (
 		<Form {...form}>
-			<form className="space-y-4">
+			<form
+				className="space-y-4"
+				onSubmit={form.handleSubmit(handleCredentialLogin)}
+			>
 				<FormField
 					control={form.control}
 					name="email"
@@ -75,10 +81,10 @@ export const LoginForm = ({ className }: LoginFormProps) => {
 						</FormItem>
 					)}
 				/>
-				<Button type="submit" className="w-full">
-					Sign in
+				<Button type="submit" className="w-full" disabled={isSubmitting}>
+					{isSubmitting && <LoaderCircle />}Sign in
 				</Button>
-				<Button type="button" className="w-full">
+				<Button type="button" className="w-full" onClick={handleGoogleLogin}>
 					<FaGoogle /> Sign in with Google
 				</Button>
 			</form>

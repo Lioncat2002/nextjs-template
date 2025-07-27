@@ -23,8 +23,8 @@ model User {
   phoneNumber   String?
   photoURL      String?
 
-  createdAt     Int
-  updatedAt     Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   /* RELATIONSHIPS */
   companies     CompanyMembership[]
@@ -44,8 +44,8 @@ model Company {
   phoneNumber   String?
   photoURL      String?
 
-  createdAt     Int
-  updatedAt     Int
+ createdAt     DateTime @default(now())
+ updatedAt     DateTime @updatedAt
 
   /* RELATIONSHIPS */
   users         CompanyMembership[]
@@ -69,6 +69,9 @@ model CompanyMembership {
   userId        String
   companyId     String
   role          Role    @default(EMPLOYEE)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
 
   @@id([userId, companyId])

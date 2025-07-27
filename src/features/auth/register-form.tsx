@@ -11,14 +11,19 @@ import {
 } from "@/src/shared/ui/form";
 import { Input } from "@/src/shared/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { LoaderCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { FaGoogle } from "react-icons/fa";
 import { type RegisterFormValues, RegisterSchema } from "./schema";
+import { useLogin } from "./use-login";
+import { useCreateAccount } from "./use-register-account";
 
 interface RegisterFormProps
 	extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit"> {}
 
 export const RegisterForm = ({ className }: RegisterFormProps) => {
+	const { handleSubmit, isExecuting } = useCreateAccount("/login");
+	const { handleGoogleLogin } = useLogin();
 	const form = useForm<RegisterFormValues>({
 		defaultValues: {
 			displayName: "",
@@ -29,11 +34,12 @@ export const RegisterForm = ({ className }: RegisterFormProps) => {
 		resolver: zodResolver(RegisterSchema),
 	});
 
-	const handleSubmit = form.handleSubmit((data) => {});
-
 	return (
 		<Form {...form}>
-			<form onSubmit={handleSubmit} className={`space-y-4 ${className || ""}`}>
+			<form
+				onSubmit={form.handleSubmit(handleSubmit)}
+				className={`space-y-4 ${className || ""}`}
+			>
 				<FormField
 					control={form.control}
 					name="displayName"
@@ -113,10 +119,10 @@ export const RegisterForm = ({ className }: RegisterFormProps) => {
 						</FormItem>
 					)}
 				/>
-				<Button type="submit" className="w-full">
-					Create Account
+				<Button type="submit" className="w-full" disabled={isExecuting}>
+					{isExecuting && <LoaderCircle />}Create Account
 				</Button>
-				<Button type="button" className="w-full">
+				<Button type="button" className="w-full" onClick={handleGoogleLogin}>
 					<FaGoogle /> Sign in with Google
 				</Button>
 			</form>

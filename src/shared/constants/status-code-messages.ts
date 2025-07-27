@@ -60,7 +60,7 @@ export const StatusCodes = {
 
 export type StatusCode = (typeof StatusCodes)[keyof typeof StatusCodes];
 
-export const ERROR_MESSAGES = {
+export const ERROR_MESSAGES: Partial<Record<StatusCode | string, string>> = {
 	400: "Invalid request. Please check your input.",
 	401: "Please log in to continue.",
 	403: "You do not have permission to perform this action.",

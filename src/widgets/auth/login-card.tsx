@@ -28,7 +28,7 @@ export const LoginCard = () => {
 					<p className="text-clay-muted mt-1">Sign in to your account</p>
 				</div>
 
-				<Card className="clay-card">
+				<Card>
 					<CardHeader>
 						<CardTitle>Login</CardTitle>
 						<CardDescription>
