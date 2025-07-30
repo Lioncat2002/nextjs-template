@@ -6,6 +6,7 @@ import {
 	Trash2,
 } from "lucide-react";
 
+import { cn } from "@/src/shared/lib/utils";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -25,17 +26,24 @@ import {
 
 export function NavProjects({
 	projects,
+	isOnboarded,
 }: {
 	projects: {
 		name: string;
 		url: string;
 		icon: LucideIcon;
 	}[];
+	isOnboarded: boolean;
 }) {
 	const { isMobile } = useSidebar();
 
 	return (
-		<SidebarGroup className="group-data-[collapsible=icon]:hidden">
+		<SidebarGroup
+			className={cn(
+				"transition-all delay-1000 blur-none group-data-[collapsible=icon]:hidden",
+				!isOnboarded && "pointer-events-none opacity-50 blur-xs",
+			)}
+		>
 			<SidebarGroupLabel>Projects</SidebarGroupLabel>
 			<SidebarMenu>
 				{projects.map((item) => (

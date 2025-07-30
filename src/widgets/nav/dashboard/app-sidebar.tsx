@@ -1,5 +1,6 @@
 "use client";
 
+import { useUser } from "@/src/features/user/user-context";
 import {
 	Sidebar,
 	SidebarContent,
@@ -19,6 +20,7 @@ import {
 	Settings2,
 	SquareTerminal,
 } from "lucide-react";
+import { useMemo } from "react";
 import { NavMain } from "./nav-main";
 import { NavProjects } from "./nav-projects";
 import { NavUser } from "./nav-user";
@@ -26,11 +28,6 @@ import { TeamSwitcher } from "./team-switcher";
 
 // This is sample data.
 const data = {
-	user: {
-		name: "shadcn",
-		email: "m@example.com",
-		avatar: "/avatars/shadcn.jpg",
-	},
 	teams: [
 		{
 			name: "Acme Inc",
@@ -155,17 +152,31 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+	const { user, memberships } = useUser();
+
+	const companies = useMemo(() => {
+		return memberships.map((m) => {
+			return {
+				id: m.company.id,
+				name: m.company.name,
+				logo: m.company.logo,
+			};
+		});
+	}, [memberships]);
+
+	const isOnboarded = !!companies.length;
+
 	return (
 		<Sidebar collapsible="icon" {...props}>
 			<SidebarHeader>
-				<TeamSwitcher teams={data.teams} />
+				<TeamSwitcher teams={companies} />
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={data.navMain} />
-				<NavProjects projects={data.projects} />
+				<NavMain items={data.navMain} isOnboarded={isOnboarded} />
+				<NavProjects projects={data.projects} isOnboarded={isOnboarded} />
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser user={data.user} />
+				<NavUser user={user} />
 			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>

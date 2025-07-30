@@ -1,4 +1,7 @@
-import { createUser, getUserByFirebaseUID } from "@/src/entities/user/db";
+import {
+	createUser,
+	getUserByFirebaseUIDWithMemberships,
+} from "@/src/entities/user/db";
 import { verifyFirebaseIdToken } from "@/src/shared/lib/firebase/firebase.server";
 import type { LoginData } from "../entities/user/schema";
 import { destroySession, setSession } from "../shared/auth/session";
@@ -9,7 +12,7 @@ export const loginUseCase = async (input: LoginData) => {
 	const isValid = await verifyFirebaseIdToken(idToken);
 	if (!isValid) throw new Error("Invalid Firebase ID token");
 
-	const user = await getUserByFirebaseUID(meta.uid);
+	const user = await getUserByFirebaseUIDWithMemberships(meta.uid);
 	if (!user) {
 		await createUser({
 			firebaseUID: meta.uid,

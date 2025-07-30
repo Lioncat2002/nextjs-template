@@ -2,6 +2,7 @@
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
 
+import { cn } from "@/src/shared/lib/utils";
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -20,6 +21,7 @@ import {
 
 export function NavMain({
 	items,
+	isOnboarded,
 }: {
 	items: {
 		title: string;
@@ -31,9 +33,15 @@ export function NavMain({
 			url: string;
 		}[];
 	}[];
+	isOnboarded: boolean;
 }) {
 	return (
-		<SidebarGroup>
+		<SidebarGroup
+			className={cn(
+				"transition-all delay-1000 blur-none",
+				!isOnboarded && "pointer-events-none opacity-50 blur-xs",
+			)}
+		>
 			<SidebarGroupLabel>Platform</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) => (

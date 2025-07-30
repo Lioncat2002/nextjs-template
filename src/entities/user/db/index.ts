@@ -14,10 +14,44 @@ export const createUser = async (data: CreateUser) => {
 	});
 };
 
-export const getUserByFirebaseUID = async (firebaseUID: string) => {
+export const getUserByFirebaseUIDWithMemberships = async (
+	firebaseUID: string,
+) => {
 	const user = await db.user.findUnique({
 		where: {
 			firebaseUID: firebaseUID,
+		},
+		include: {
+			companies: {
+				include: {
+					company: true,
+				},
+			},
+		},
+	});
+	return user;
+};
+
+export const getUserById = async (id: string) => {
+	const user = await db.user.findUnique({
+		where: {
+			id: id,
+		},
+	});
+	return user;
+};
+
+export const getUserByEmailWithMemberships = async (email: string) => {
+	const user = await db.user.findUnique({
+		where: {
+			email: email,
+		},
+		include: {
+			companies: {
+				include: {
+					company: true,
+				},
+			},
 		},
 	});
 	return user;

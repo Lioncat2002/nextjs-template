@@ -1,13 +1,8 @@
-import { ChevronsUpDown, Plus } from "lucide-react";
-import * as React from "react";
-
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuShortcut,
 	DropdownMenuTrigger,
 } from "@/src/shared/ui/dropdown-menu";
 import {
@@ -16,21 +11,68 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/src/shared/ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { ChevronsUpDown, Plus } from "lucide-react";
+import { useState } from "react";
 
-export function TeamSwitcher({
+export const TeamSwitcher = ({
 	teams,
 }: {
 	teams: {
+		id: string;
 		name: string;
-		logo: React.ElementType;
-		plan: string;
+		logo: string | null;
 	}[];
-}) {
+}) => {
 	const { isMobile } = useSidebar();
-	const [activeTeam, setActiveTeam] = React.useState(teams[0]);
+	const [activeTeam, setActiveTeam] = useState(teams[0]);
 
-	if (!activeTeam) {
-		return null;
+	if (!teams.length) {
+		return (
+			<SidebarMenu>
+				<SidebarMenuItem>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<SidebarMenuButton
+								size="lg"
+								className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+							>
+								<div className="bg-muted text-muted-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+									<Plus className="size-4" />
+								</div>
+								<div className="grid flex-1 text-left text-sm leading-tight">
+									<span className="truncate font-medium text-muted-foreground">
+										No teams
+									</span>
+									<span className="truncate text-xs text-muted-foreground">
+										Create your first team
+									</span>
+								</div>
+								<ChevronsUpDown className="ml-auto size-4" />
+							</SidebarMenuButton>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent
+							className="min-w-56 rounded-lg"
+							align="start"
+							side={isMobile ? "bottom" : "right"}
+							sideOffset={4}
+						>
+							<DropdownMenuLabel className="text-muted-foreground text-xs">
+								Teams
+							</DropdownMenuLabel>
+							<DropdownMenuItem className="gap-2 p-2">
+								<div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
+									<Plus className="size-4" />
+								</div>
+								<div className="text-muted-foreground font-medium">
+									Create team
+								</div>
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</SidebarMenuItem>
+			</SidebarMenu>
+		);
 	}
 
 	return (
@@ -42,18 +84,34 @@ export function TeamSwitcher({
 							size="lg"
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						>
-							<div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-								<activeTeam.logo className="size-4" />
-							</div>
+							{activeTeam.logo ? (
+								<Avatar className="size-8">
+									<AvatarImage
+										src={activeTeam.logo || "/placeholder.svg"}
+										alt={activeTeam.name}
+									/>
+									<AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground text-xs font-semibold">
+										{activeTeam.name.slice(0, 2).toUpperCase()}
+									</AvatarFallback>
+								</Avatar>
+							) : (
+								<Avatar className="size-8">
+									<AvatarFallback className="bg-muted text-muted-foreground text-xs font-semibold">
+										{activeTeam.name.slice(0, 2).toUpperCase()}
+									</AvatarFallback>
+								</Avatar>
+							)}
 							<div className="grid flex-1 text-left text-sm leading-tight">
 								<span className="truncate font-medium">{activeTeam.name}</span>
-								<span className="truncate text-xs">{activeTeam.plan}</span>
+								<span className="truncate text-xs text-muted-foreground">
+									Active team
+								</span>
 							</div>
-							<ChevronsUpDown className="ml-auto" />
+							<ChevronsUpDown className="ml-auto size-4" />
 						</SidebarMenuButton>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
-						className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+						className="min-w-56 rounded-lg"
 						align="start"
 						side={isMobile ? "bottom" : "right"}
 						sideOffset={4}
@@ -61,29 +119,33 @@ export function TeamSwitcher({
 						<DropdownMenuLabel className="text-muted-foreground text-xs">
 							Teams
 						</DropdownMenuLabel>
-						{teams.map((team, index) => (
-							<DropdownMenuItem
-								key={team.name}
-								onClick={() => setActiveTeam(team)}
-								className="gap-2 p-2"
-							>
-								<div className="flex size-6 items-center justify-center rounded-md border">
-									<team.logo className="size-3.5 shrink-0" />
+						{teams.map((team) => (
+							<DropdownMenuItem key={team.id} className="gap-2 p-2">
+								{team.logo ? (
+									<Avatar className="size-6">
+										<AvatarImage
+											src={team.logo || "/placeholder.svg"}
+											alt={team.name}
+										/>
+										<AvatarFallback className="text-xs font-medium text-muted-foreground">
+											{team.name.slice(0, 2).toUpperCase()}
+										</AvatarFallback>
+									</Avatar>
+								) : (
+									<Avatar className="size-6">
+										<AvatarFallback className="text-xs font-medium text-muted-foreground">
+											{team.name.slice(0, 2).toUpperCase()}
+										</AvatarFallback>
+									</Avatar>
+								)}
+								<div className="text-muted-foreground font-medium">
+									{team.name}
 								</div>
-								{team.name}
-								<DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
 							</DropdownMenuItem>
 						))}
-						<DropdownMenuSeparator />
-						<DropdownMenuItem className="gap-2 p-2">
-							<div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-								<Plus className="size-4" />
-							</div>
-							<div className="text-muted-foreground font-medium">Add team</div>
-						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</SidebarMenuItem>
 		</SidebarMenu>
 	);
-}
+};

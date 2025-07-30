@@ -4,10 +4,19 @@ import { env } from "@/src/config";
 import type { SessionOptions } from "iron-session";
 import { z } from "zod";
 
+const MetaSchema = z.object({
+	email: z.string().nullable(),
+	emailVerified: z.boolean(),
+	displayName: z.string().nullable(),
+	phoneNumber: z.string().nullable(),
+	photoURL: z.string().nullable(),
+	uid: z.string(),
+});
+
 export const SessionSchema = z.object({
 	accessToken: z.string(),
 	refreshToken: z.string().nullable(),
-	meta: z.any().optional(),
+	meta: MetaSchema,
 });
 
 export type SessionModel = z.infer<typeof SessionSchema>;

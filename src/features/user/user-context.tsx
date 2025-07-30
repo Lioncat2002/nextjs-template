@@ -1,12 +1,13 @@
 "use client";
 
 import type { OrgMembership } from "@/src/entities/membership/types";
+import type { Organization } from "@/src/entities/organization/types";
 import type { User } from "@/src/entities/user/types";
 import { type ReactNode, createContext, useContext } from "react";
 
 type UserContextValue = {
 	user: User;
-	memberships: OrgMembership[];
+	memberships: (OrgMembership & { company: Organization })[];
 };
 
 const UserContext = createContext<UserContextValue>(undefined as never);
