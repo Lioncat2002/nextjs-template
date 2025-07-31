@@ -15,7 +15,7 @@ export const loginUserAction = unAuthenticatedAction
 	.inputSchema(LoginDataSchema)
 	.action(async ({ parsedInput }: { parsedInput: LoginData }) => {
 		await loginUseCase(parsedInput);
-		redirect("/home");
+		redirect("/c");
 	});
 
 export const logoutUserAction = authenticatedAction

@@ -41,7 +41,7 @@ export function NavProjects({
 		<SidebarGroup
 			className={cn(
 				"transition-all delay-1000 blur-none group-data-[collapsible=icon]:hidden",
-				!isOnboarded && "pointer-events-none opacity-50 blur-xs",
+				!isOnboarded && "pointer-events-none opacity-50 blur-xs select-none",
 			)}
 		>
 			<SidebarGroupLabel>Projects</SidebarGroupLabel>

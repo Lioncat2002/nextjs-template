@@ -39,7 +39,7 @@ export function NavMain({
 		<SidebarGroup
 			className={cn(
 				"transition-all delay-1000 blur-none",
-				!isOnboarded && "pointer-events-none opacity-50 blur-xs",
+				!isOnboarded && "pointer-events-none opacity-50 blur-xs select-none",
 			)}
 		>
 			<SidebarGroupLabel>Platform</SidebarGroupLabel>
