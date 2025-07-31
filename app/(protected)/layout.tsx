@@ -5,6 +5,7 @@ import { SidebarInset, SidebarProvider } from "@/src/shared/ui/sidebar";
 import { getUserUseCase } from "@/src/usecases/user";
 import { AppSidebar } from "@/src/widgets/nav/dashboard/app-sidebar";
 import { DashboardCrumb } from "@/src/widgets/nav/dashboard/crumb";
+import { redirect } from "next/navigation";
 
 interface DashboardLayoutProps {
 	children: React.ReactNode;
@@ -16,7 +17,7 @@ export default async function DashboardLayout({
 	const session = await getSession();
 
 	if (!session) {
-		return <AuthProvider session={null}>{children}</AuthProvider>;
+		redirect("/login")
 	}
 
 	const user = await getUserUseCase({ firebaseUID: session.meta.uid });

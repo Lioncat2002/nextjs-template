@@ -8,6 +8,8 @@ import { useAction } from "next-safe-action/hooks";
 import { auth } from "@/src/shared/lib/firebase/firebase.client";
 import { loginUserAction } from "./action";
 import type { LoginFormValues } from "./schema";
+import { toast } from "sonner";
+import { getErrorMessage } from "@/src/shared/lib/utils";
 
 export const useLogin = () => {
 	const { execute, isExecuting } = useAction(loginUserAction, {
@@ -16,6 +18,7 @@ export const useLogin = () => {
 		},
 		onError: (err) => {
 			console.error("Login action failed:", err);
+			toast(getErrorMessage(err))
 		},
 	});
 
@@ -42,6 +45,7 @@ export const useLogin = () => {
 			});
 		} catch (err) {
 			console.error("Firebase email/password login error:", err);
+			toast(getErrorMessage(err))
 		}
 	};
 
@@ -64,6 +68,7 @@ export const useLogin = () => {
 			});
 		} catch (err) {
 			console.error("Firebase Google login error:", err);
+			toast(getErrorMessage(err))
 		}
 	};
 
