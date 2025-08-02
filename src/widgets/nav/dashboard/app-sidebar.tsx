@@ -1,6 +1,7 @@
 "use client";
 
 import { useUser } from "@/src/features/user/user-context";
+import { ScrollArea } from "@/src/shared/ui/scroll-area";
 import {
 	Sidebar,
 	SidebarContent,
@@ -19,10 +20,12 @@ import {
 	PieChart,
 	Settings2,
 	SquareTerminal,
+	Users,
 } from "lucide-react";
 import { useMemo } from "react";
 import { NavMain } from "./nav-main";
 import { NavProjects } from "./nav-projects";
+import { NavSettings } from "./nav-settings";
 import { NavUser } from "./nav-user";
 import { TeamSwitcher } from "./team-switcher";
 
@@ -108,29 +111,6 @@ const data = {
 				},
 			],
 		},
-		{
-			title: "Settings",
-			url: "#",
-			icon: Settings2,
-			items: [
-				{
-					title: "General",
-					url: "#",
-				},
-				{
-					title: "Team",
-					url: "#",
-				},
-				{
-					title: "Billing",
-					url: "#",
-				},
-				{
-					title: "Limits",
-					url: "#",
-				},
-			],
-		},
 	],
 	projects: [
 		{
@@ -147,6 +127,34 @@ const data = {
 			name: "Travel",
 			url: "#",
 			icon: MapIcon,
+		},
+	],
+	settings: [
+		{
+			title: "General",
+			url: "#",
+			icon: Settings2,
+			items: [
+				{
+					title: "Company",
+					url: "#",
+				},
+				{
+					title: "Billing & Limits",
+					url: "#",
+				},
+			],
+		},
+		{
+			title: "Team",
+			url: "#",
+			icon: Users,
+			items: [
+				{
+					title: "Members",
+					url: "#",
+				},
+			],
 		},
 	],
 };
@@ -171,9 +179,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			<SidebarHeader>
 				<TeamSwitcher teams={companies} />
 			</SidebarHeader>
-			<SidebarContent>
-				<NavMain items={data.navMain} isOnboarded={isOnboarded} />
-				<NavProjects projects={data.projects} isOnboarded={isOnboarded} />
+			<SidebarContent className="flex flex-col h-full">
+				<ScrollArea className="h-1 flex-grow">
+					<NavMain items={data.navMain} isOnboarded={isOnboarded} />
+					<NavProjects projects={data.projects} isOnboarded={isOnboarded} />
+					<NavSettings items={data.settings} isOnboarded={isOnboarded} />
+				</ScrollArea>
 			</SidebarContent>
 			<SidebarFooter>
 				<NavUser user={user} />
