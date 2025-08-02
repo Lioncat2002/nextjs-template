@@ -42,7 +42,6 @@ model Company {
   location      String?
   email         String?
   phoneNumber   String?
-  photoURL      String?
 
  createdAt     DateTime @default(now())
  updatedAt     DateTime @updatedAt
