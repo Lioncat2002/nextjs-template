@@ -2,21 +2,31 @@
 
 import type React from "react";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 
 import { Button } from "@/src/shared/ui/button";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormMessage,
+} from "@/src/shared/ui/form";
 import { Input } from "@/src/shared/ui/input";
 import { Progress } from "@/src/shared/ui/progress";
 import { Textarea } from "@/src/shared/ui/textarea";
 
 import {
-	ArrowRight,
-	Building2,
-	Check,
-	Globe,
-	Mail,
-	MapPin,
-	Phone,
-} from "lucide-react";
+	type MultiStepConfig,
+	useMultiStepForm,
+} from "@/src/shared/ui/hooks/use-multistep";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Building2, Globe, Mail, MapPin, Phone } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
+
+// ----------------------------
+// Schema & Config
+// ----------------------------
 
 type CompanyFormData = {
 	name: string;
@@ -29,231 +39,556 @@ type CompanyFormData = {
 	photoURL: string | null;
 };
 
-const questions = [
-	{
-		id: "name",
-		title: "What's the name of your company?",
-		subtitle: "This will be displayed on your profile",
-		type: "text",
-		placeholder: "Enter your company name",
-		required: true,
-		icon: Building2,
-	},
-	{
-		id: "description",
-		title: "Tell us about your company",
-		subtitle: "What does your company do? Keep it brief.",
-		type: "textarea",
-		placeholder: "We help businesses...",
-		required: false,
-		icon: Building2,
-	},
-	{
-		id: "email",
-		title: "What's your company email?",
-		subtitle: "We'll use this for important updates",
-		type: "email",
-		placeholder: "company@example.com",
-		required: false,
-		icon: Mail,
-	},
-	{
-		id: "phoneNumber",
-		title: "Company phone number",
-		subtitle: "Optional - for customer support",
-		type: "tel",
-		placeholder: "+1 (555) 123-4567",
-		required: false,
-		icon: Phone,
-	},
-	{
-		id: "website",
-		title: "Do you have a website?",
-		subtitle: "Share your company's online presence",
-		type: "url",
-		placeholder: "https://www.example.com",
-		required: false,
-		icon: Globe,
-	},
-	{
-		id: "location",
-		title: "Where is your company located?",
-		subtitle: "City, state, or country",
-		type: "text",
-		placeholder: "San Francisco, CA",
-		required: false,
-		icon: MapPin,
-	},
-];
+const nameSchema = z.object({
+	name: z
+		.string()
+		.min(2, "Company name must be at least 2 characters")
+		.max(100, "Company name must be at most 100 characters")
+		.regex(
+			/^[A-Za-z0-9&()\-.'",\s]+$/,
+			"Company name contains invalid characters",
+		),
+});
 
-/* TODO REFACTOR TO USE ZOD AND BE MORE REUSABLE, WILL PASS IN STEPWISE METADATA AND FORM SCHEMA TO AGGREGATE DATA IN A CENTRAL HOOK */
+const descriptionSchema = z.object({
+	description: z.string().optional().nullable(),
+});
 
-export function OnboardingForm() {
-	const [currentQuestion, setCurrentQuestion] = useState(0);
-	const [formData, setFormData] = useState<CompanyFormData>({
-		name: "",
-		description: null,
-		email: null,
-		phoneNumber: null,
-		website: null,
-		location: null,
-		logo: null,
-		photoURL: null,
+const emailSchema = z.object({
+	email: z
+		.string()
+		.email("Valid email required")
+		.optional()
+		.nullable()
+		.or(z.literal(""))
+		.or(z.literal(null)),
+});
+
+const phoneSchema = z.object({
+	phoneNumber: z.string().optional().nullable(),
+});
+
+const websiteSchema = z.object({
+	website: z
+		.string()
+		.url("Valid URL required")
+		.optional()
+		.nullable()
+		.or(z.literal(""))
+		.or(z.literal(null)),
+});
+
+const locationSchema = z.object({
+	location: z.string().optional().nullable(),
+});
+
+const stepConfig: MultiStepConfig<CompanyFormData> = {
+	steps: [
+		{
+			metadata: {
+				id: "name",
+				title: "What's the name of your company?",
+				subtitle: "This will be displayed on your profile",
+				icon: Building2,
+			},
+			schema: nameSchema,
+			defaultValues: { name: "" },
+		},
+		{
+			metadata: {
+				id: "description",
+				title: "Tell us about your company",
+				subtitle: "What does your company do? Keep it brief.",
+				icon: Building2,
+			},
+			schema: descriptionSchema,
+			defaultValues: { description: "" },
+		},
+		{
+			metadata: {
+				id: "email",
+				title: "What's your company email?",
+				subtitle: "We'll use this for important updates",
+				icon: Mail,
+			},
+			schema: emailSchema,
+			defaultValues: { email: "" },
+		},
+		{
+			metadata: {
+				id: "phoneNumber",
+				title: "Company phone number",
+				subtitle: "Optional - for customer support",
+				icon: Phone,
+			},
+			schema: phoneSchema,
+			defaultValues: { phoneNumber: "" },
+		},
+		{
+			metadata: {
+				id: "website",
+				title: "Do you have a website?",
+				subtitle: "Share your company's online presence",
+				icon: Globe,
+			},
+			schema: websiteSchema,
+			defaultValues: { website: "" },
+		},
+		{
+			metadata: {
+				id: "location",
+				title: "Where is your company located?",
+				subtitle: "City, state, or country",
+				icon: MapPin,
+			},
+			schema: locationSchema,
+			defaultValues: { location: "" },
+		},
+	],
+	onSubmit: (data: CompanyFormData) => {
+		console.log("Company data:", data);
+	},
+};
+
+// ----------------------------
+// Step Components
+// ----------------------------
+
+type StepProps = {
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	stepData: any;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	updateStepData: (stepId: string, data: any) => void;
+	onKeyPress: (e: React.KeyboardEvent) => void;
+	stepIndex: number;
+	updateStepValidity: (stepIndex: number, isValid: boolean) => void;
+	currentStepSchema: z.ZodTypeAny;
+};
+
+const NameStep = ({
+	stepData,
+	updateStepData,
+	updateStepValidity,
+	stepIndex,
+	onKeyPress,
+	currentStepSchema,
+}: StepProps) => {
+	const form = useForm({
+		defaultValues: stepData,
+		resolver: zodResolver(currentStepSchema),
+		mode: "onChange",
 	});
-	const [inputValue, setInputValue] = useState("");
 
-	const totalQuestions = questions.length;
-	const progress = ((currentQuestion + 1) / totalQuestions) * 100;
-	const currentQ = questions[currentQuestion];
-	const IconComponent = currentQ.icon;
+	const { control, formState } = form;
+	const values = useWatch({ control });
 
 	useEffect(() => {
-		// Load current value when question changes
-		const currentValue = formData[currentQ.id as keyof CompanyFormData];
-		setInputValue(currentValue || "");
-	}, [currentQuestion, currentQ.id, formData]);
+		updateStepData("name", values);
+		updateStepValidity(stepIndex, formState.isValid);
+	}, [
+		values,
+		formState.isValid,
+		updateStepData,
+		updateStepValidity,
+		stepIndex,
+	]);
 
-	const canProceed = () => {
-		if (currentQ.required) {
-			return inputValue.trim() !== "";
-		}
-		return true;
-	};
+	return (
+		<Form {...form}>
+			<FormField
+				control={control}
+				name="name"
+				render={({ field }) => (
+					<FormItem>
+						<FormControl>
+							<Input
+								{...field}
+								placeholder="Enter your company name"
+								className="text-xl p-6 h-16 border-2 focus:border-primary"
+								onKeyDown={onKeyPress}
+								autoFocus
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+		</Form>
+	);
+};
 
-	const handleNext = () => {
-		// Save current answer
-		setFormData((prev) => ({
-			...prev,
-			[currentQ.id]: inputValue || null,
-		}));
+const DescriptionStep = ({
+	stepData,
+	updateStepData,
+	updateStepValidity,
+	stepIndex,
+	onKeyPress,
+	currentStepSchema,
+}: StepProps) => {
+	const form = useForm({
+		defaultValues: stepData,
+		resolver: zodResolver(currentStepSchema),
+		mode: "onChange",
+	});
 
-		if (currentQuestion < totalQuestions - 1) {
-			setCurrentQuestion(currentQuestion + 1);
-		} else {
-			handleSubmit();
-		}
-	};
+	const { control, formState } = form;
+	const values = useWatch({ control });
 
-	const handleSubmit = () => {
-		const finalData = {
-			...formData,
-			[currentQ.id]: inputValue || null,
-		};
-		console.log("Company data:", finalData);
-		// submit logic here
-	};
+	useEffect(() => {
+		updateStepData("description", values);
+		updateStepValidity(stepIndex, formState.isValid);
+	}, [
+		values,
+		formState.isValid,
+		updateStepData,
+		updateStepValidity,
+		stepIndex,
+	]);
+
+	return (
+		<Form {...form}>
+			<FormField
+				control={control}
+				name="description"
+				render={({ field }) => (
+					<FormItem>
+						<FormControl>
+							<Textarea
+								{...field}
+								placeholder="We help businesses..."
+								className="text-xl p-6 min-h-[120px] resize-none border-2 focus:border-primary"
+								onKeyDown={onKeyPress}
+								autoFocus
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+		</Form>
+	);
+};
+
+const EmailStep = ({
+	stepData,
+	updateStepData,
+	updateStepValidity,
+	stepIndex,
+	onKeyPress,
+	currentStepSchema,
+}: StepProps) => {
+	const form = useForm({
+		defaultValues: stepData,
+		resolver: zodResolver(currentStepSchema),
+		mode: "onChange",
+	});
+
+	const { control, formState } = form;
+	const values = useWatch({ control });
+
+	useEffect(() => {
+		updateStepData("email", values);
+		updateStepValidity(stepIndex, formState.isValid);
+	}, [
+		values,
+		formState.isValid,
+		updateStepData,
+		updateStepValidity,
+		stepIndex,
+	]);
+
+	return (
+		<Form {...form}>
+			<FormField
+				control={control}
+				name="email"
+				render={({ field }) => (
+					<FormItem>
+						<FormControl>
+							<Input
+								{...field}
+								type="email"
+								placeholder="company@example.com"
+								className="text-xl p-6 h-16 border-2 focus:border-primary"
+								onKeyDown={onKeyPress}
+								autoFocus
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+		</Form>
+	);
+};
+
+const PhoneStep = ({
+	stepData,
+	updateStepData,
+	updateStepValidity,
+	stepIndex,
+	onKeyPress,
+	currentStepSchema,
+}: StepProps) => {
+	const form = useForm({
+		defaultValues: stepData,
+		resolver: zodResolver(currentStepSchema),
+		mode: "onChange",
+	});
+
+	const { control, formState } = form;
+	const values = useWatch({ control });
+
+	useEffect(() => {
+		updateStepData("phoneNumber", values);
+		updateStepValidity(stepIndex, formState.isValid);
+	}, [
+		values,
+		formState.isValid,
+		updateStepData,
+		updateStepValidity,
+		stepIndex,
+	]);
+
+	return (
+		<Form {...form}>
+			<FormField
+				control={control}
+				name="phoneNumber"
+				render={({ field }) => (
+					<FormItem>
+						<FormControl>
+							<Input
+								{...field}
+								type="tel"
+								placeholder="+1 (555) 123-4567"
+								className="text-xl p-6 h-16 border-2 focus:border-primary"
+								onKeyDown={onKeyPress}
+								autoFocus
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+		</Form>
+	);
+};
+
+const WebsiteStep = ({
+	stepData,
+	updateStepData,
+	updateStepValidity,
+	stepIndex,
+	onKeyPress,
+	currentStepSchema,
+}: StepProps) => {
+	const form = useForm({
+		defaultValues: stepData,
+		resolver: zodResolver(currentStepSchema),
+		mode: "onChange",
+	});
+
+	const { control, formState } = form;
+	const values = useWatch({ control });
+
+	useEffect(() => {
+		updateStepData("website", values);
+		updateStepValidity(stepIndex, formState.isValid);
+	}, [
+		values,
+		formState.isValid,
+		updateStepData,
+		updateStepValidity,
+		stepIndex,
+	]);
+
+	return (
+		<Form {...form}>
+			<FormField
+				control={control}
+				name="website"
+				render={({ field }) => (
+					<FormItem>
+						<FormControl>
+							<Input
+								{...field}
+								type="url"
+								placeholder="https://www.example.com"
+								className="text-xl p-6 h-16 border-2 focus:border-primary"
+								onKeyDown={onKeyPress}
+								autoFocus
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+		</Form>
+	);
+};
+
+const LocationStep = ({
+	stepData,
+	updateStepData,
+	updateStepValidity,
+	stepIndex,
+	onKeyPress,
+	currentStepSchema,
+}: StepProps) => {
+	const form = useForm({
+		defaultValues: stepData,
+		resolver: zodResolver(currentStepSchema),
+		mode: "onChange",
+	});
+
+	const { control, formState } = form;
+	const values = useWatch({ control });
+
+	useEffect(() => {
+		updateStepData("location", values);
+		updateStepValidity(stepIndex, formState.isValid);
+	}, [
+		values,
+		formState.isValid,
+		updateStepData,
+		updateStepValidity,
+		stepIndex,
+	]);
+
+	return (
+		<Form {...form}>
+			<FormField
+				control={control}
+				name="location"
+				render={({ field }) => (
+					<FormItem>
+						<FormControl>
+							<Input
+								{...field}
+								type="text"
+								placeholder="San Francisco, CA"
+								className="text-xl p-6 h-16 border-2 focus:border-primary"
+								onKeyDown={onKeyPress}
+								autoFocus
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+		</Form>
+	);
+};
+
+// ----------------------------
+// Step Mapping & Form UI
+// ----------------------------
+
+const stepComponents = {
+	name: NameStep,
+	description: DescriptionStep,
+	email: EmailStep,
+	phoneNumber: PhoneStep,
+	website: WebsiteStep,
+	location: LocationStep,
+};
+
+export function OnboardingForm() {
+	const {
+		currentStep,
+		totalSteps,
+		progress,
+		currentStepMetadata,
+		stepData,
+		updateStepData,
+		updateStepValidity,
+		next,
+		prev,
+		canProceed,
+		canSubmit,
+		submit,
+		isFirstStep,
+		isLastStep,
+		currentStepSchema,
+	} = useMultiStepForm<CompanyFormData>(stepConfig);
+
+	const IconComponent = currentStepMetadata.icon;
+	const StepComponent =
+		stepComponents[currentStepMetadata.id as keyof typeof stepComponents];
 
 	const handleKeyPress = (e: React.KeyboardEvent) => {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
-			if (canProceed()) {
-				handleNext();
+			if (canProceed) {
+				if (isLastStep && canSubmit) submit();
+				else next();
 			}
 		}
 	};
 
 	return (
 		<div className="min-h-screen flex flex-col">
-			{/* Top progress bar */}
 			<div className="fixed top-0 left-0 right-0 z-10">
 				<Progress value={progress} className="h-1 rounded-none" />
 			</div>
 
-			{/* Main section: question + action */}
 			<div className="flex-1 flex flex-col justify-center p-8 pt-16 overflow-hidden">
-				{/* Question content */}
 				<div
-					key={currentQ.id}
-					className="w-full max-w-2xl mx-auto transition-all duration-500 ease-in-out transform animate-slide-in"
+					key={currentStepMetadata.id}
+					className="w-full max-w-2xl mx-auto transition-all animate-slide-in"
 				>
-					{/* Question count */}
 					<div className="mb-8">
 						<span className="text-sm font-medium text-muted-foreground">
-							{currentQuestion + 1} → {totalQuestions}
+							{currentStep + 1} → {totalSteps}
 						</span>
 					</div>
-
-					{/* Title & subtitle */}
 					<div className="mb-12">
 						<div className="flex items-center gap-4 mb-6">
 							<div className="w-12 h-12 rounded-xl border-2 flex items-center justify-center">
-								<IconComponent className="w-6 h-6" />
+								{IconComponent && <IconComponent className="w-6 h-6" />}
 							</div>
 							<div>
 								<h1 className="text-3xl md:text-4xl font-bold leading-tight">
-									{currentQ.title}
+									{currentStepMetadata.title}
 								</h1>
-								{currentQ.subtitle && (
+								{currentStepMetadata.subtitle && (
 									<p className="text-lg text-muted-foreground mt-2">
-										{currentQ.subtitle}
+										{currentStepMetadata.subtitle}
 									</p>
 								)}
 							</div>
 						</div>
 					</div>
-
-					{/* Input field */}
 					<div className="mb-12">
-						{currentQ.type === "textarea" ? (
-							<Textarea
-								value={inputValue}
-								onChange={(e) => setInputValue(e.target.value)}
-								onKeyDown={handleKeyPress}
-								placeholder={currentQ.placeholder}
-								className="text-xl p-6 min-h-[120px] resize-none border-2 focus:border-primary"
-								autoFocus
-							/>
-						) : (
-							<Input
-								type={currentQ.type}
-								value={inputValue}
-								onChange={(e) => setInputValue(e.target.value)}
-								onKeyDown={handleKeyPress}
-								placeholder={currentQ.placeholder}
-								className="text-xl p-6 h-16 border-2 focus:border-primary"
-								autoFocus
+						{StepComponent && (
+							<StepComponent
+								stepData={stepData[currentStepMetadata.id] || {}}
+								updateStepData={updateStepData}
+								onKeyPress={handleKeyPress}
+								updateStepValidity={updateStepValidity}
+								stepIndex={currentStep}
+								currentStepSchema={currentStepSchema}
 							/>
 						)}
 					</div>
 				</div>
 
-				{/* Button bar */}
 				<div className="w-full max-w-2xl mx-auto">
-					<div className="flex items-center justify-between">
-						<div className="text-sm text-muted-foreground">
-							Press{" "}
-							<kbd className="px-2 py-1 bg-muted rounded text-xs">Enter ↵</kbd>{" "}
-							to continue
-						</div>
-
-						{/* <Button
-							onClick={handleNext}
-							disabled={!canProceed()}
-							size="lg"
-							className="px-8"
-						>
-							{currentQuestion === totalQuestions - 1 ? (
-								<>
-									<Check className="w-4 h-4 mr-2" />
-									Create Company
-								</>
-							) : (
-								<>
-									OK
-									<ArrowRight className="w-4 h-4 ml-2" />
-								</>
-							)}
-						</Button> */}
+					<div className="flex items-center gap-2 text-sm text-muted-foreground">
+						Press{" "}
+						<kbd className="px-2 py-1 bg-muted rounded text-xs">Enter ↵</kbd> to
+						continue
 					</div>
 				</div>
 			</div>
 
-			{currentQuestion > 0 && (
+			{!isFirstStep && (
 				<div className="fixed bottom-8 left-8">
 					<Button
 						variant="ghost"
 						size="sm"
-						onClick={() => setCurrentQuestion(currentQuestion - 1)}
+						onClick={prev}
 						className="text-muted-foreground"
 					>
 						← Previous
