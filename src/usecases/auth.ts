@@ -12,9 +12,12 @@ export const loginUseCase = async (input: LoginData) => {
 	const isValid = await verifyFirebaseIdToken(idToken);
 	if (!isValid) throw new Error("Invalid Firebase ID token");
 
-	const user = await getUserByFirebaseUIDWithMemberships(meta.uid);
-	if (!user) {
-		await createUser({
+	const userWithMemberships = await getUserByFirebaseUIDWithMemberships(
+		meta.uid,
+	);
+	let userId: string;
+	if (!userWithMemberships) {
+		const createdUser = await createUser({
 			firebaseUID: meta.uid,
 			displayName: meta.displayName ?? "",
 			email: meta.email ?? "",
@@ -22,12 +25,18 @@ export const loginUseCase = async (input: LoginData) => {
 			photoURL: meta.photoURL ?? "",
 			emailVerified: meta.emailVerified,
 		});
+		userId = createdUser.id;
+	} else {
+		userId = userWithMemberships.id;
 	}
 
 	await setSession({
 		accessToken: idToken,
 		refreshToken: null,
-		meta,
+		meta: {
+			...meta,
+			id: userId,
+		},
 	});
 };
 

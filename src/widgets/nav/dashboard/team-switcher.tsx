@@ -82,7 +82,7 @@ export const TeamSwitcher = ({
 					<DropdownMenuTrigger asChild>
 						<SidebarMenuButton
 							size="lg"
-							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground space-x-2"
 						>
 							{activeTeam.logo ? (
 								<Avatar className="size-8">
@@ -95,8 +95,8 @@ export const TeamSwitcher = ({
 									</AvatarFallback>
 								</Avatar>
 							) : (
-								<Avatar className="size-8">
-									<AvatarFallback className="bg-muted text-muted-foreground text-xs font-semibold">
+								<Avatar className="size-8 inline-flex items-center justify-center p-4">
+									<AvatarFallback className="bg-muted text-muted-foreground text-sm font-semibold py-2 px-3 rounded-sm">
 										{activeTeam.name.slice(0, 2).toUpperCase()}
 									</AvatarFallback>
 								</Avatar>

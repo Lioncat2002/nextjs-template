@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/generated/prisma";
+import { type Prisma, PrismaClient } from "@/generated/prisma";
 
 let _db: PrismaClient;
 
@@ -10,3 +10,4 @@ const dbClient = () => {
 };
 
 export const db = dbClient();
+export type TxClient = Prisma.TransactionClient | PrismaClient;

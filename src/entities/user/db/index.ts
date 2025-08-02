@@ -1,8 +1,8 @@
-import { db } from "@/src/shared/db";
+import { type TxClient, db } from "@/src/shared/db";
 import type { CreateUser } from "../schema";
 
-export const createUser = async (data: CreateUser) => {
-	return await db.user.create({
+export const createUser = (data: CreateUser, tx: TxClient = db) => {
+	return tx.user.create({
 		data: {
 			displayName: data.displayName,
 			phoneNumber: data.phoneNumber,
@@ -14,13 +14,12 @@ export const createUser = async (data: CreateUser) => {
 	});
 };
 
-export const getUserByFirebaseUIDWithMemberships = async (
+export const getUserByFirebaseUIDWithMemberships = (
 	firebaseUID: string,
+	tx: TxClient = db,
 ) => {
-	const user = await db.user.findUnique({
-		where: {
-			firebaseUID: firebaseUID,
-		},
+	return tx.user.findUnique({
+		where: { firebaseUID },
 		include: {
 			companies: {
 				include: {
@@ -29,23 +28,20 @@ export const getUserByFirebaseUIDWithMemberships = async (
 			},
 		},
 	});
-	return user;
 };
 
-export const getUserById = async (id: string) => {
-	const user = await db.user.findUnique({
-		where: {
-			id: id,
-		},
+export const getUserById = (id: string, tx: TxClient = db) => {
+	return tx.user.findUnique({
+		where: { id },
 	});
-	return user;
 };
 
-export const getUserByEmailWithMemberships = async (email: string) => {
-	const user = await db.user.findUnique({
-		where: {
-			email: email,
-		},
+export const getUserByEmailWithMemberships = (
+	email: string,
+	tx: TxClient = db,
+) => {
+	return tx.user.findUnique({
+		where: { email },
 		include: {
 			companies: {
 				include: {
@@ -54,5 +50,4 @@ export const getUserByEmailWithMemberships = async (email: string) => {
 			},
 		},
 	});
-	return user;
 };

@@ -1,8 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useState } from "react";
-import { z } from "zod";
+import { useEffect } from "react";
 
 import { Button } from "@/src/shared/ui/button";
 import {
@@ -17,72 +16,21 @@ import { Progress } from "@/src/shared/ui/progress";
 import { Textarea } from "@/src/shared/ui/textarea";
 
 import {
+	type CreateCompany,
+	CreateCompanySchema,
+} from "@/src/entities/organization/schema";
+import {
 	type MultiStepConfig,
 	useMultiStepForm,
 } from "@/src/shared/ui/hooks/use-multistep";
+import { WaveLoader } from "@/src/shared/ui/wave-loader";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, Globe, Mail, MapPin, Phone } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
+import type { z } from "zod";
+import { useCreateCompany } from "./use-create-company";
 
-// ----------------------------
-// Schema & Config
-// ----------------------------
-
-type CompanyFormData = {
-	name: string;
-	description: string | null;
-	email: string | null;
-	phoneNumber: string | null;
-	website: string | null;
-	location: string | null;
-	logo: string | null;
-	photoURL: string | null;
-};
-
-const nameSchema = z.object({
-	name: z
-		.string()
-		.min(2, "Company name must be at least 2 characters")
-		.max(100, "Company name must be at most 100 characters")
-		.regex(
-			/^[A-Za-z0-9&()\-.'",\s]+$/,
-			"Company name contains invalid characters",
-		),
-});
-
-const descriptionSchema = z.object({
-	description: z.string().optional().nullable(),
-});
-
-const emailSchema = z.object({
-	email: z
-		.string()
-		.email("Valid email required")
-		.optional()
-		.nullable()
-		.or(z.literal(""))
-		.or(z.literal(null)),
-});
-
-const phoneSchema = z.object({
-	phoneNumber: z.string().optional().nullable(),
-});
-
-const websiteSchema = z.object({
-	website: z
-		.string()
-		.url("Valid URL required")
-		.optional()
-		.nullable()
-		.or(z.literal(""))
-		.or(z.literal(null)),
-});
-
-const locationSchema = z.object({
-	location: z.string().optional().nullable(),
-});
-
-const stepConfig: MultiStepConfig<CompanyFormData> = {
+const stepConfig: MultiStepConfig<CreateCompany> = {
 	steps: [
 		{
 			metadata: {
@@ -91,7 +39,7 @@ const stepConfig: MultiStepConfig<CompanyFormData> = {
 				subtitle: "This will be displayed on your profile",
 				icon: Building2,
 			},
-			schema: nameSchema,
+			schema: CreateCompanySchema.pick({ name: true }),
 			defaultValues: { name: "" },
 		},
 		{
@@ -101,7 +49,7 @@ const stepConfig: MultiStepConfig<CompanyFormData> = {
 				subtitle: "What does your company do? Keep it brief.",
 				icon: Building2,
 			},
-			schema: descriptionSchema,
+			schema: CreateCompanySchema.pick({ description: true }),
 			defaultValues: { description: "" },
 		},
 		{
@@ -111,7 +59,7 @@ const stepConfig: MultiStepConfig<CompanyFormData> = {
 				subtitle: "We'll use this for important updates",
 				icon: Mail,
 			},
-			schema: emailSchema,
+			schema: CreateCompanySchema.pick({ email: true }),
 			defaultValues: { email: "" },
 		},
 		{
@@ -121,7 +69,7 @@ const stepConfig: MultiStepConfig<CompanyFormData> = {
 				subtitle: "Optional - for customer support",
 				icon: Phone,
 			},
-			schema: phoneSchema,
+			schema: CreateCompanySchema.pick({ phoneNumber: true }),
 			defaultValues: { phoneNumber: "" },
 		},
 		{
@@ -131,7 +79,7 @@ const stepConfig: MultiStepConfig<CompanyFormData> = {
 				subtitle: "Share your company's online presence",
 				icon: Globe,
 			},
-			schema: websiteSchema,
+			schema: CreateCompanySchema.pick({ website: true }),
 			defaultValues: { website: "" },
 		},
 		{
@@ -141,18 +89,11 @@ const stepConfig: MultiStepConfig<CompanyFormData> = {
 				subtitle: "City, state, or country",
 				icon: MapPin,
 			},
-			schema: locationSchema,
+			schema: CreateCompanySchema.pick({ location: true }),
 			defaultValues: { location: "" },
 		},
 	],
-	onSubmit: (data: CompanyFormData) => {
-		console.log("Company data:", data);
-	},
 };
-
-// ----------------------------
-// Step Components
-// ----------------------------
 
 type StepProps = {
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -495,6 +436,7 @@ const stepComponents = {
 };
 
 export function OnboardingForm() {
+	const { execute, isExecuting } = useCreateCompany();
 	const {
 		currentStep,
 		totalSteps,
@@ -511,7 +453,7 @@ export function OnboardingForm() {
 		isFirstStep,
 		isLastStep,
 		currentStepSchema,
-	} = useMultiStepForm<CompanyFormData>(stepConfig);
+	} = useMultiStepForm<CreateCompany>({ ...stepConfig, onSubmit: execute });
 
 	const IconComponent = currentStepMetadata.icon;
 	const StepComponent =
@@ -593,6 +535,11 @@ export function OnboardingForm() {
 					>
 						← Previous
 					</Button>
+				</div>
+			)}
+			{isExecuting && (
+				<div className="fixed inset-0  backdrop-blur-sm z-50 flex items-center justify-center">
+					<WaveLoader />
 				</div>
 			)}
 		</div>

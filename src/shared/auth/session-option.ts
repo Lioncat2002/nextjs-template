@@ -11,6 +11,7 @@ const MetaSchema = z.object({
 	phoneNumber: z.string().nullable(),
 	photoURL: z.string().nullable(),
 	uid: z.string(),
+	id: z.string(),
 });
 
 export const SessionSchema = z.object({

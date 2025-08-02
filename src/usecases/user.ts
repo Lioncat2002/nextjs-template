@@ -1,5 +1,3 @@
-"use server";
-
 import { getUserByFirebaseUIDWithMemberships } from "../entities/user/db";
 
 export const getUserUseCase = async ({
