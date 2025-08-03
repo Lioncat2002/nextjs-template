@@ -143,6 +143,10 @@ const data = {
 					title: "Billing & Limits",
 					url: "#",
 				},
+				{
+					title: "Email Templates",
+					url: "emails",
+				},
 			],
 		},
 		{

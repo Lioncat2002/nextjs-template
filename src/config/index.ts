@@ -11,6 +11,7 @@ export const env = createEnv({
 		DATABASE_URL: z.string().url(),
 		NODE_ENV: z.enum(["development", "production", "test"]),
 		SECRET_COOKIE_PASSWORD: z.string().min(32),
+		RESEND_API_KEY: z.string(),
 	},
 	/*
 	 * Environment variables available on the client (and server).
@@ -52,6 +53,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID:
 			process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 		NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+		RESEND_API_KEY: process.env.RESEND_API_KEY,
 	},
 	// experimental__runtimeEnv: {
 	//   NEXT_PUBLIC_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_PUBLISHABLE_KEY,
