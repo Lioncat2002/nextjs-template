@@ -136,7 +136,7 @@ export default function EmailPreviewPage() {
 							<div className="mx-4 mb-4">
 								<div className="w-full h-96 overflow-auto resize-none flex flex-col">
 									<ScrollArea className="h-1 flex-grow px-4">
-										{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <rendering email templates which are in HTML> */}
+										{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <render email html> */}
 										<div dangerouslySetInnerHTML={{ __html: html }} />
 									</ScrollArea>
 								</div>
