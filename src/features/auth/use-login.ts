@@ -7,14 +7,18 @@ import { useAction } from "next-safe-action/hooks";
 
 import { auth } from "@/src/shared/lib/firebase/firebase.client";
 import { getErrorMessage } from "@/src/shared/lib/utils";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { loginUserAction } from "./action";
 import type { LoginFormValues } from "./schema";
 
-export const useLogin = () => {
+export const useLogin = (redirect?: string) => {
+	const router = useRouter();
 	const { execute, isExecuting } = useAction(loginUserAction, {
 		onSuccess: () => {
 			console.log("Login successful");
+			toast("Redirecting to dashboard");
+			if (redirect) router.push(redirect);
 		},
 		onError: (err) => {
 			console.error("Login action failed:", err);

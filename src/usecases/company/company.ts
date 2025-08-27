@@ -1,7 +1,7 @@
-import { addUserMembership } from "../entities/membership/db";
-import { createCompany } from "../entities/organization/db";
-import type { CreateCompany } from "../entities/organization/schema";
-import { type TxClient, db } from "../shared/db";
+import { addUserMembership } from "@/src/entities/membership/db";
+import { createCompany } from "@/src/entities/organization/db";
+import type { CreateCompany } from "@/src/entities/organization/schema";
+import { type TxClient, db } from "@/src/shared/db";
 
 export const createCompanyUsecase = async (
 	data: CreateCompany,
@@ -9,7 +9,6 @@ export const createCompanyUsecase = async (
 ) => {
 	return db.$transaction(async (tx: TxClient) => {
 		const company = await createCompany(data, tx);
-		console.log("THIS IS THE USER ID ", userId, company.id);
 		await addUserMembership(
 			{
 				companyId: company.id,

@@ -5,7 +5,7 @@ import {
 	authenticatedAction,
 	unAuthenticatedAction,
 } from "@/src/shared/action-client";
-import { loginUseCase, logoutUseCase } from "@/src/usecases/auth";
+import { loginUseCase, logoutUseCase } from "@/src/usecases/auth/auth";
 import { redirect } from "next/navigation";
 
 export const loginUserAction = unAuthenticatedAction
@@ -15,7 +15,6 @@ export const loginUserAction = unAuthenticatedAction
 	.inputSchema(LoginDataSchema)
 	.action(async ({ parsedInput }: { parsedInput: LoginData }) => {
 		await loginUseCase(parsedInput);
-		redirect("/c");
 	});
 
 export const logoutUserAction = authenticatedAction

@@ -1,10 +1,8 @@
 import type { CompanyMembership } from "@/generated/prisma";
+import type { User } from "@/src/entities/user/types";
 
 export type OrgMembership = CompanyMembership;
 
-export type AddUserMembership = Omit<
-	Pick<OrgMembership, "companyId" | "userId" | "role">,
-	"role"
-> & {
-	role?: OrgMembership["role"];
+export type OrgMembershipWithUser = OrgMembership & {
+	user: User;
 };

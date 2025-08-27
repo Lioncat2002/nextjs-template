@@ -1,7 +1,7 @@
 import { UserContextProvider } from "@/src/features/user/user-context";
 import { AuthProvider } from "@/src/shared/auth/auth-provider";
 import { getSession } from "@/src/shared/auth/session";
-import { getUserUseCase } from "@/src/usecases/user";
+import { getUserUseCase } from "@/src/usecases/user/user";
 import { redirect } from "next/navigation";
 
 type ProtectedLayoutProps = {

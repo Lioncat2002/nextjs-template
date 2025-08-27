@@ -1,4 +1,4 @@
-import { getUserByFirebaseUIDWithMemberships } from "../entities/user/db";
+import { getUserByFirebaseUIDWithMemberships } from "@/src/entities/user/db";
 
 export const getUserUseCase = async ({
 	firebaseUID,

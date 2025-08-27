@@ -1,7 +1,16 @@
 import { type TxClient, db } from "@/src/shared/db";
-import type { CreateUser } from "../schema";
 
-export const createUser = (data: CreateUser, tx: TxClient = db) => {
+export const createUser = (
+	data: {
+		displayName: string;
+		phoneNumber?: string;
+		photoURL?: string;
+		email: string;
+		firebaseUID?: string;
+		emailVerified: boolean;
+	},
+	tx: TxClient = db,
+) => {
 	return tx.user.create({
 		data: {
 			displayName: data.displayName,
@@ -33,6 +42,12 @@ export const getUserByFirebaseUIDWithMemberships = (
 export const getUserById = (id: string, tx: TxClient = db) => {
 	return tx.user.findUnique({
 		where: { id },
+	});
+};
+
+export const getUserByEmail = (email: string, tx: TxClient = db) => {
+	return tx.user.findUnique({
+		where: { email },
 	});
 };
 

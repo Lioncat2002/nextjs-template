@@ -5,6 +5,7 @@ import {
 	Head,
 	Hr,
 	Html,
+	Img,
 	Link,
 	Preview,
 	Section,
@@ -104,7 +105,7 @@ export const InviteEmail = ({
 	inviterEmail,
 	teamName,
 	inviteUrl,
-	expiresIn = "7 days",
+	expiresIn = "3 days",
 }: {
 	inviterName?: string;
 	inviterEmail?: string;
@@ -115,37 +116,111 @@ export const InviteEmail = ({
 	<Html>
 		<Head />
 		<Preview>
-			{inviterName} invited you to join
-			{teamName ? ` ${teamName}` : " their team"}
+			{inviterName} invited you to join {teamName || "their team"}!
 		</Preview>
-		<Body>
-			<Container>
-				<Text>
-					🎉 You&apos;ve been invited to join
-					{teamName ? ` ${teamName}` : " a team"}!
+		<Body
+			style={{
+				backgroundColor: "#f5f7fa",
+				fontFamily: "Arial, sans-serif",
+				padding: "20px",
+			}}
+		>
+			<Container
+				style={{
+					maxWidth: "520px",
+					margin: "0 auto",
+					backgroundColor: "#ffffff",
+					borderRadius: "8px",
+					padding: "32px",
+					boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+				}}
+			>
+				{/* Logo / Header */}
+				{/* <Section style={{ textAlign: "center", marginBottom: "24px" }}>
+          <Img
+            src="https://dummyimage.com/120x40/007bff/ffffff&text=Logo"
+            width="120"
+            alt="Company Logo"
+            style={{ margin: "0 auto" }}
+          />
+        </Section> */}
+
+				{/* Main Invite Text */}
+				<Text
+					style={{
+						fontSize: "20px",
+						fontWeight: "bold",
+						marginBottom: "16px",
+						textAlign: "center",
+						color: "#333",
+					}}
+				>
+					🎉 You&apos;ve been invited to join {teamName || "a team"}!
 				</Text>
-				<Text>
+
+				<Text style={{ fontSize: "16px", marginBottom: "16px", color: "#444" }}>
 					{inviterName}
 					{inviterEmail ? ` (${inviterEmail})` : ""} has invited you to
 					collaborate.
 				</Text>
-				<Text>By accepting this invitation, you&apos;ll get access to:</Text>
-				<Text>• Shared projects and resources</Text>
-				<Text>• Team collaboration tools</Text>
-				<Text>• Direct communication with team members</Text>
 
-				<Section>
-					<Button href={inviteUrl}>Accept Invitation</Button>
+				<Text style={{ fontSize: "15px", marginBottom: "12px", color: "#444" }}>
+					By accepting this invitation, you&apos;ll get access to:
+				</Text>
+
+				<Text style={{ fontSize: "15px", marginBottom: "8px", color: "#444" }}>
+					• Shared projects and resources <br />• Team collaboration tools{" "}
+					<br />• Direct communication with team members
+				</Text>
+
+				<Section style={{ textAlign: "center", margin: "28px 0" }}>
+					<Button
+						style={{
+							backgroundColor: "#007bff",
+							color: "#ffffff",
+							padding: "12px 24px",
+							borderRadius: "6px",
+							fontSize: "16px",
+							fontWeight: "bold",
+							textDecoration: "none",
+							display: "inline-block",
+						}}
+					>
+						<Link href={inviteUrl}>Accept Invitation</Link>
+					</Button>
 				</Section>
 
-				<Text>
+				{/* Expiry */}
+				<Text style={{ fontSize: "14px", color: "#666", marginTop: "12px" }}>
 					<strong>This invitation expires in {expiresIn}.</strong>
 				</Text>
 
-				<Hr />
-				<Text>
+				{/* Backup link */}
+				<Text style={{ fontSize: "13px", color: "#666", marginTop: "16px" }}>
+					Or copy and paste this link in your browser: <br />
+					<Link href={inviteUrl} style={{ color: "#007bff" }}>
+						{inviteUrl}
+					</Link>
+				</Text>
+
+				<Hr style={{ margin: "28px 0", borderColor: "#eee" }} />
+
+				{/* Footer */}
+				<Text style={{ fontSize: "12px", color: "#999", textAlign: "center" }}>
 					If you weren&apos;t expecting this invitation or don&apos;t know{" "}
 					{inviterName}, you can safely ignore this email.
+				</Text>
+
+				<Text
+					style={{
+						fontSize: "12px",
+						color: "#999",
+						textAlign: "center",
+						marginTop: "16px",
+					}}
+				>
+					© {new Date().getFullYear()} {teamName || "Our Company"}. All rights
+					reserved.
 				</Text>
 			</Container>
 		</Body>

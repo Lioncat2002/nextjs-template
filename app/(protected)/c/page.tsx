@@ -1,6 +1,8 @@
 import { requireSession } from "@/src/shared/auth/utils";
-import { getUserUseCase } from "@/src/usecases/user";
+import { getUserUseCase } from "@/src/usecases/user/user";
 import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 export default async function InitialOnboardingCheckPage() {
 	const session = await requireSession();

@@ -6,7 +6,7 @@ import {
 } from "@/src/entities/organization/schema";
 import { authenticatedAction } from "@/src/shared/action-client";
 import type { SessionModel } from "@/src/shared/auth/session-option";
-import { createCompanyUsecase } from "@/src/usecases/company";
+import { createCompanyUsecase } from "@/src/usecases/company/company";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 

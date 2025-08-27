@@ -16,7 +16,7 @@ datasource db {
 
 model User {
   id            String  @id @default(cuid())
-  firebaseUID   String  @unique
+  firebaseUID   String?  @unique
   email         String  @unique
   emailVerified Boolean
   displayName   String?
@@ -28,6 +28,7 @@ model User {
 
   /* RELATIONSHIPS */
   companies     CompanyMembership[]
+  invites       Invitation[]
 
   @@map("users") 
 }
@@ -48,6 +49,7 @@ model Company {
 
   /* RELATIONSHIPS */
   users         CompanyMembership[]
+  invitations   Invitation[]
 
   @@map("companies")
 }
@@ -74,6 +76,38 @@ model CompanyMembership {
 
   @@id([userId, companyId])
   @@map("company_memberships")
+}
+
+
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+model Invitation {
+  id          String   @id @default(cuid())
+  email       String
+  token       String   @unique
+  role        Role     @default(EMPLOYEE)
+
+  status      InvitationStatus @default(PENDING)
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+
+  companyId   String
+  inviterId   String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  /* RELATIONSHIPS */
+  company     Company @relation(fields: [companyId], references: [id])
+  inviter     User    @relation(fields: [inviterId], references: [id])
+
+  @@map("invitations")
 }
 
 

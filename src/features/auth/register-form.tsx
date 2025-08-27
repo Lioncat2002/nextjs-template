@@ -12,6 +12,7 @@ import {
 import { Input } from "@/src/shared/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { FaGoogle } from "react-icons/fa";
 import { type RegisterFormValues, RegisterSchema } from "./schema";
@@ -22,8 +23,11 @@ interface RegisterFormProps
 	extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit"> {}
 
 export const RegisterForm = ({ className }: RegisterFormProps) => {
-	const { handleSubmit, isExecuting } = useCreateAccount("/login");
-	const { handleGoogleLogin } = useLogin();
+	const searchParams = useSearchParams();
+	const isInvite = searchParams.get("invite");
+	const redirectPath = isInvite ? `/invite?token=${isInvite}` : "/login";
+	const { handleSubmit, isExecuting } = useCreateAccount(redirectPath);
+	const { handleGoogleLogin } = useLogin(redirectPath);
 	const form = useForm<RegisterFormValues>({
 		defaultValues: {
 			displayName: "",
@@ -51,7 +55,6 @@ export const RegisterForm = ({ className }: RegisterFormProps) => {
 									id="displayName"
 									type="text"
 									placeholder="John Doe"
-									className="clay-input"
 									{...field}
 								/>
 							</FormControl>
@@ -70,7 +73,6 @@ export const RegisterForm = ({ className }: RegisterFormProps) => {
 									id="email"
 									type="email"
 									placeholder="name@example.com"
-									className="clay-input"
 									{...field}
 								/>
 							</FormControl>
@@ -111,7 +113,6 @@ export const RegisterForm = ({ className }: RegisterFormProps) => {
 									id="confirmPassword"
 									type="password"
 									placeholder="Confirm your password"
-									className="clay-input"
 									{...field}
 								/>
 							</FormControl>

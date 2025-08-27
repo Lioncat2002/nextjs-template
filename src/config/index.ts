@@ -28,6 +28,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z.string(),
 		NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: z.string(),
 		NEXT_PUBLIC_FIREBASE_APP_ID: z.string(),
+		NEXT_PUBLIC_DEPLOYMENT_URL: z.string(),
 	},
 	/*
 	 * Specify what values should be validated by your schemas above.
@@ -53,6 +54,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID:
 			process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 		NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+		NEXT_PUBLIC_DEPLOYMENT_URL: process.env.NEXT_PUBLIC_DEPLOYMENT_URL,
 		RESEND_API_KEY: process.env.RESEND_API_KEY,
 	},
 	// experimental__runtimeEnv: {

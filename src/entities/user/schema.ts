@@ -5,7 +5,7 @@ export const CreateUserSchema = z.object({
 	phoneNumber: z.string().optional(),
 	photoURL: z.string().optional(),
 	email: z.string().email(),
-	firebaseUID: z.string(),
+	firebaseUID: z.string().optional(),
 	emailVerified: z.boolean(),
 });
 

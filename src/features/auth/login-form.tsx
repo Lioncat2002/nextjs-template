@@ -13,6 +13,7 @@ import { Input } from "@/src/shared/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { FaGoogle } from "react-icons/fa";
 import { type LoginFormValues, LoginSchema } from "./schema";
@@ -22,7 +23,11 @@ interface LoginFormProps
 	extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit"> {}
 
 export const LoginForm = ({ className }: LoginFormProps) => {
-	const { handleCredentialLogin, handleGoogleLogin, isSubmitting } = useLogin();
+	const searchParams = useSearchParams();
+	const isInvite = searchParams.get("invite");
+	const redirectPath = isInvite ? `/invite?token=${isInvite}` : "/c";
+	const { handleCredentialLogin, handleGoogleLogin, isSubmitting } =
+		useLogin(redirectPath);
 	const form = useForm<LoginFormValues>({
 		defaultValues: {
 			email: "",
@@ -30,7 +35,6 @@ export const LoginForm = ({ className }: LoginFormProps) => {
 		},
 		resolver: zodResolver(LoginSchema),
 	});
-
 	return (
 		<Form {...form}>
 			<form

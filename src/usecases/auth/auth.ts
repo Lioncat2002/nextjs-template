@@ -1,33 +1,35 @@
 import {
 	createUser,
-	getUserByFirebaseUIDWithMemberships,
+	getUserByEmailWithMemberships,
 } from "@/src/entities/user/db";
-import { verifyFirebaseIdToken } from "@/src/shared/lib/firebase/firebase.server";
-import type { LoginData } from "../entities/user/schema";
-import { destroySession, setSession } from "../shared/auth/session";
+import type { LoginData } from "@/src/entities/user/schema";
+import { destroySession, setSession } from "@/src/shared/auth/session";
 import {
 	renderLoginNotificationEmail,
 	renderWelcomeEmail,
-} from "../shared/emails/email-template";
-import { sendEmail } from "../shared/emails/resend";
+} from "@/src/shared/emails/email-template";
+import { sendEmail } from "@/src/shared/emails/resend";
+import { verifyFirebaseIdToken } from "@/src/shared/lib/firebase/firebase.server";
 
 export const loginUseCase = async (input: LoginData) => {
 	const { idToken, meta } = input;
 
 	const isValid = await verifyFirebaseIdToken(idToken);
 	if (!isValid) throw new Error("Invalid Firebase ID token");
+	if (!meta.email)
+		throw new Error(
+			"Your account is missing an email address. Please update your email in your account settings.",
+		);
 
-	const userWithMemberships = await getUserByFirebaseUIDWithMemberships(
-		meta.uid,
-	);
+	const userWithMemberships = await getUserByEmailWithMemberships(meta.email);
 	let userId: string;
 	if (!userWithMemberships) {
 		const createdUser = await createUser({
 			firebaseUID: meta.uid,
 			displayName: meta.displayName ?? "",
-			email: meta.email ?? "",
-			phoneNumber: meta.phoneNumber ?? "",
-			photoURL: meta.photoURL ?? "",
+			email: meta.email,
+			phoneNumber: meta.phoneNumber ?? undefined,
+			photoURL: meta.photoURL ?? undefined,
 			emailVerified: meta.emailVerified,
 		});
 		userId = createdUser.id;
@@ -38,7 +40,7 @@ export const loginUseCase = async (input: LoginData) => {
 			supportEmail: "support@yourapp.com",
 		});
 		await sendEmail({
-			to: meta.email ?? "",
+			to: meta.email,
 			html: html,
 			subject: "Welcome to your app",
 		});
@@ -52,7 +54,7 @@ export const loginUseCase = async (input: LoginData) => {
 			supportEmail: "support@yourapp.com",
 		});
 		await sendEmail({
-			to: meta.email ?? "",
+			to: meta.email,
 			html: html,
 			subject: "New Login Detected",
 		});
